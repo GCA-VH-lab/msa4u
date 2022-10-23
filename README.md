@@ -1,10 +1,10 @@
 
-<img  src="docs/img/msa4u_logo.png" width="150"/>
+<img  src="docs/img/msa4u_logo.png" width="160"/>
 
 
 ## Description
 
-MSA4u is a bioinformatics tool for Multiple Sequence Alignments visualisation. 
+MSA4u is a bioinformatics tool for Multiple Sequence Alignment visualisation. 
 
 **Programming languages:** Python3   
 **OS:** MacOS, Linux  
