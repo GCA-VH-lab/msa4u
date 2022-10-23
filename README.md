@@ -1,5 +1,5 @@
 
-<img  src="docs/img/msa4u_logo.png" width="180"/>
+<img  src="docs/img/msa4u_logo.png" width="150"/>
 
 
 ## Description
