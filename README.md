@@ -1,15 +1,15 @@
 
-<img  src="docs/img/msa4u_logo.png" width="160"/>
+<img  src="docs/img/msa4u_logo.png" width="300"/>
 
 
 ## Description
 
-MSA4u is a bioinformatics tool for Multiple Sequence Alignment visualisation. 
+**MSA4u** is a simple visualisation tool for Multiple Sequence Alignments.
 
-**Programming languages:** Python3   
+**Programming language:** Python3   
 **OS:** MacOS, Linux  
 **Python dependencies:** biopython, configs, argparse, reportlab  
-**OS-level dependencies:** mafft (v. 7.505 is included in the package)   
+**OS-level dependencies:** mafft (v. 7.490 is included in the package)   
 **License:** [WTFPL](http://www.wtfpl.net)  
 **Version:** 0.1.0 (October 2022)
 
@@ -38,8 +38,8 @@ python3 -m pip install -e .
 
 ## Reference
 
-If you find uorf4u useful, please cite:  
-xxx
+If you find msa4u useful, please cite [uorf4u paper](https://doi.org/10.1101/2022.10.27.514069). msa4u initially was developed as a sublibrary of uorf4u.     
+Artyom. A. Egorov, Gemma C. Atkinson, **uORF4u: a tool for annotation of conserved upstream open reading frames**, *bioRxiv 2022.10.27.514069; doi: [10.1101/2022.10.27.514069](https://doi.org/10.1101/2022.10.27.514069)*
 
 
 ## Contact

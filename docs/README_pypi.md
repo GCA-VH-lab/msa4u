@@ -4,7 +4,7 @@
 
 ## Description
 
-**MSA4u** is a bioinformatics tool for Multiple Sequence Alignment visualisation. 
+**MSA4u** is a simple visualisation tool for Multiple Sequence Alignments.
 
 **Programming language:** Python3   
 **OS:** MacOS, Linux  
