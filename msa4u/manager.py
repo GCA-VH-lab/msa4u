@@ -47,9 +47,12 @@ class Parameters:
 
     """
 
-    def __init__(self):
+    def __init__(self, api=True, config="standard"):
         self.arguments = dict(debug=False, verbose=False)
-        self.cmd_arguments = {}
+        self.cmd_arguments = {"output_filename_aln": "auto", "output_filename": "auto", "verbose": True,
+                              "debug": False, "sequence_type": "auto", "alignments": None, "fasta": None}
+        if api:
+            self.load_config(config)
 
     def parse_cmd_arguments(self) -> None:
         """Parse command-line arguments
@@ -65,11 +68,12 @@ class Parameters:
         mutually_exclusive_group.add_argument("-aln", dest="alignments", type=str, default=None)
         parser.add_argument("-data", "--data", dest="msa4u_data", action="store_true")
         parser.add_argument("-linux", "--linux", dest="linux", action="store_true", default=None)
-        parser.add_argument("-st", dest="sequence_type", choices=["nt", "aa", "auto"], type=str, default="auto")
+        parser.add_argument("-label", dest="label", choices=["id", "description", "all"], default="all")
         parser.add_argument("-o-aln", dest="output_filename_aln", type=str, default="auto")
         parser.add_argument("-o", dest="output_filename", type=str, default="auto")
+        parser.add_argument("-st", dest="sequence_type", choices=["nt", "aa", "auto"], type=str, default="auto")
         parser.add_argument("-c", dest="config_file", type=str, default="standard")
-        parser.add_argument("-v", "--version", action='version', version='%(prog)s 0.1.0')
+        parser.add_argument("-v", "--version", action='version', version='%(prog)s 0.1.1')
         parser.add_argument("-q", "--quiet", dest="verbose", default=True, action="store_false")
         parser.add_argument("--debug", "-debug", dest="debug", action="store_true")
         parser.add_argument("-h", "--help", dest="help", action="store_true")
@@ -93,20 +97,9 @@ class Parameters:
                 print(help_message.read(), file=sys.stdout)
                 sys.exit()
 
-        if args["fasta"] and args["output_filename_aln"] == "auto":
-            args["output_filename_aln"] = msa4u.methods.update_path_extension(args["fasta"], ".aln.fa")
-        if args["output_filename"] == "auto":
-            if args["alignments"]:
-                args["output_filename"] = msa4u.methods.update_path_extension(args["alignments"], "pdf")
-            elif args["fasta"]:
-                args["output_filename"] = msa4u.methods.update_path_extension(args["fasta"], "pdf")
-            else:
-                args["output_filename"] = f"msa4u_{time.strftime('%Y_%m_%d-%H_%M')}.pdf"
-
         filtered_args = {k: v for k, v in args.items() if v is not None}
 
         self.cmd_arguments = filtered_args
-        print(filtered_args)
         return None
 
     def load_config(self, path: str = "standard") -> None:
@@ -185,6 +178,8 @@ class Fasta:
         """
         self.fasta = fasta
         self.parameters = parameters
+        if not self.parameters.arguments["fasta"]:
+            self.parameters.arguments["fasta"] = self.fasta
 
     def run_mafft(self) -> Bio.Align.MultipleSeqAlignment:
         """Run MAFFT tool to get MSA.
@@ -192,11 +187,14 @@ class Fasta:
         Returns:
             Bio.Align.MultipleSeqAlignment: MSA
         """
+
         if self.parameters.arguments["save_msa_results"]:
             output_name = self.parameters.arguments["output_filename_aln"]
             if output_name == "auto":
                 output_name = msa4u.methods.update_path_extension(self.fasta, "aln.fa")
             mafft_output = open(output_name, "w")
+            if self.parameters.arguments["verbose"]:
+                print(f"💌 Alignments file was saved as: {output_name}", file=sys.stdout)
         else:
             mafft_output = tempfile.NamedTemporaryFile()
         mafft = self.parameters.arguments["mafft_binary"]
@@ -233,6 +231,16 @@ class MSA:
                 record.description = " ".join(record.description.split(" ")[1:])
         if isinstance(msa, Bio.Align.MultipleSeqAlignment):
             self.msa = msa
+        for record in self.msa:
+            if self.parameters.arguments["label"] == "id":
+                record.annotations["label"] = record.id
+            elif self.parameters.arguments["label"] == "description":
+                record.annotations["label"] = record.description
+            elif self.parameters.arguments["label"] == "all":
+                record.annotations["label"] = f"{record.id} {record.description}"
+            else:
+                raise MSA4uError("Incorrect label parameter (can be id, desription or all)\n"
+                                 f"Check your config file.")
         if parameters.arguments["sequence_type"] == "auto":
             used_alphabet = set("".join([str(record.seq) for record in self.msa]))
             ambiguous_codon_table = Bio.Data.CodonTable.ambiguous_dna_by_name["Standard"]
@@ -252,6 +260,13 @@ class MSA:
         msa_plot_manager = MSAPlotManager(self.msa, self.parameters)
         msa_plot_manager.define_x_axis_coordinate_system()
         msa_plot_manager.create_tracks()
+        if self.parameters.arguments["output_filename"] == "auto":
+            if self.parameters.arguments["alignments"]:
+                self.parameters.arguments["output_filename"] = msa4u.methods.update_path_extension(self.parameters.arguments["alignments"], "pdf")
+            elif self.parameters.arguments["fasta"]:
+                self.parameters.arguments["output_filename"] = msa4u.methods.update_path_extension(self.parameters.arguments["fasta"], "pdf")
+            else:
+                self.parameters.arguments["output_filename"] = f"msa4u_{time.strftime('%Y_%m_%d-%H_%M')}.pdf"
         msa_plot_manager.plot(self.parameters.arguments["output_filename"])
         return None
 
@@ -292,8 +307,9 @@ class MSAPlotManager:
         label_font_size = msa4u.methods.string_height_to_font_size(label_height, "regular", self.parameters.arguments)
         self.additional_data["label_font_size"] = label_font_size
         msa_length = self.msa.get_alignment_length()
-        max_label_width = max([reportlab.pdfbase.pdfmetrics.stringWidth(i.description, "regular",  # to regulate
-                                                                        label_font_size) for i in self.msa])
+        max_label_width = max(
+            [reportlab.pdfbase.pdfmetrics.stringWidth(i.annotations["label"], "regular",  # to regulate
+                                                      label_font_size) for i in self.msa])
 
         char_height = self.parameters.arguments["char_size"] * self.parameters.arguments["tile_size"] * cm
         char_font_size = msa4u.methods.string_height_to_font_size(char_height, "mono", self.parameters.arguments)
@@ -351,6 +367,8 @@ class MSAPlotManager:
             track.draw(image.canvas)
             current_y_top -= (track.needed_space)
         image.save()
+        if self.parameters.arguments["verbose"]:
+            print(f"🖼️  MSA visualisation file was saved as: {filename}", file=sys.stdout)
         return None
 
 
@@ -358,7 +376,7 @@ class Loader:
     """Parent class for tracks loaders.
 
     Attributes:
-        parameters (uorf4u.manager.Parameters): Parameters' class object.
+        parameters (Parameters): Parameters' class object.
         prepared_data (dict): dict with data needed for visualisation tracks.
 
     """
@@ -367,7 +385,7 @@ class Loader:
         """Parent's constructor for creating a Loader class object.
 
         Arguments:
-            parameters (uorf4u.manager.Parameters): Parameters' class object.
+            parameters (Parameters): Parameters' class object.
         """
         self.parameters = parameters
         self.prepared_data = None
@@ -430,7 +448,7 @@ class SequencesLoader(Loader):
         prepared_data["label_font_size"] = additional_data["label_font_size"]
         prepared_data["char_font_size"] = additional_data["char_font_size"]
         prepared_data["sequence"] = record.seq
-        prepared_data["label"] = record.description
+        prepared_data["label"] = record.annotations["label"]
         prepared_data["palette"] = additional_data["palette"]
         self.prepared_data = prepared_data
 

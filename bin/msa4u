@@ -4,7 +4,7 @@ import msa4u
 import traceback
 import sys
 
-parameters = msa4u.manager.Parameters()
+parameters = msa4u.manager.Parameters(api=False)
 parameters.parse_cmd_arguments()
 parameters.load_config(parameters.cmd_arguments["config_file"])
 if "fasta" in parameters.cmd_arguments.keys():

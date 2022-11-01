@@ -42,7 +42,7 @@ def copy_package_data() -> None:
         shutil.copytree(internal_dir, users_dir, ignore=shutil.ignore_patterns("help*", ".*"))
         return None
     except Exception as error:
-        raise msa4u.manager.uORF4uError(f"Unable to copy msa4u_data folder in your working dir.") from error
+        raise msa4u.manager.MSA4uError(f"Unable to copy msa4u_data folder in your working dir.") from error
 
 
 def hex_to_rgb(value: str) -> list:

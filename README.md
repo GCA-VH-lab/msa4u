@@ -35,7 +35,65 @@ python3 -m pip install -e .
 
 **!** If you're a linux user, run `msa4u --linux` post-install command once to update paths in the premade config files that set by default for MacOS users.
 
+## Quickstart guide
 
+Here we present several examples of msa4u vizualisations.
+The necessary data samples are provided by msa4u at the post-install step:  
+`msa4u --data` 
+
+### Command-line interface.
+
+#### Aligmnent and visualisation.
+
+You can use a fasta file unaligned sequences as input. In this case, msa4u will use mafft to align your sequences (*with --auto parameter:* *`mafft --auto input.fa`*) and then perform visualisation.  
+
+`msa4u -fa msa4u_data/aa_sequences.fa`  
+With default parameters you will get alignments file (aa_sequences.aln.fa) and pdf file with visualisaton (aa_sequences.pdf) in your working directory.  
+
+#### Visualisation of a pre-made alignments file.
+
+You can use a pre-made alignments file as input with -aln parameter: 
+
+`msa4u -aln aa_sequences.aln.fa -label description -o visualisation.pdf`
+
+In this case we also used optional arguments: `-label` to choose labels style (can be id, description or all - full header of sequences); and `-o` to set output file name.  
+See help message for more detailed parameters description (`msa4u -h`)
+
+**Output:**
+
+<img  src="docs/img/aa_sequences.png" width="400"/>
+
+### API.
+
+MSA4u has a simple API allowing it programmatic usage from within a Python program.  
+Below we descrive several Python snippets that mimic results of command-line calls. 
+
+#### Aligmnent and visualisation.
+
+```
+import msa4u
+
+parameters = msa4u.manager.Parameters()
+unaligned_fasta_file = "msa4u_data/aa_sequences.fa"
+fasta = msa4u.manager.Fasta(fasta=unaligned_fasta_file, parameters=parameters)
+mafft_output = fasta.run_mafft()
+msa = msa4u.manager.MSA(mafft_output, parameters)
+msa.plot()
+```
+#### Visualisation of a pre-made alignments file.
+
+```
+import msa4u
+
+parameters = msa4u.manager.Parameters()
+parameters.arguments["label"] = "description"
+parameters.arguments["output_filename"] = "visualisation.pdf"
+
+alignments = "aa_sequences.aln.fa"
+msa = msa4u.manager.MSA(alignments, parameters)
+msa.plot()
+```
+   
 ## Reference
 
 If you find msa4u useful, please cite [uorf4u paper](https://doi.org/10.1101/2022.10.27.514069). msa4u initially was developed as a sublibrary of uorf4u.     
