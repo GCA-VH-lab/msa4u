@@ -49,7 +49,7 @@ You can use a fasta file with unaligned sequences as input. In this case, msa4u 
 
 `msa4u -fa msa4u_data/aa_sequences.fa`  
 
-With default parameters you will get alignments file (*aa_sequences.aln.fa*) and pdf file with visualisaton (*[aa_sequences.pdf](docs/img/aa_sequences.pdf)*) in your working directory.  
+With default parameters you will get alignments file (*aa_sequences.aln.fa*) and pdf file with visualisaton ([aa_sequences.pdf](docs/img/aa_sequences.pdf)) in your working directory.  
 
 #### Visualisation of a pre-made alignments file.
 
