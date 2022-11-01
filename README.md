@@ -45,10 +45,11 @@ The necessary data samples are provided by msa4u at the post-install step:
 
 #### Aligmnent and visualisation.
 
-You can use a fasta file unaligned sequences as input. In this case, msa4u will use mafft to align your sequences (*with --auto parameter:* *`mafft --auto input.fa`*) and then perform visualisation.  
+You can use a fasta file with unaligned sequences as input. In this case, msa4u will use mafft to align your sequences (*with --auto parameter:* *`mafft --auto input.fa`*) and then perform visualisation.  
 
 `msa4u -fa msa4u_data/aa_sequences.fa`  
-With default parameters you will get alignments file (aa_sequences.aln.fa) and pdf file with visualisaton (aa_sequences.pdf) in your working directory.  
+
+With default parameters you will get alignments file (*aa_sequences.aln.fa*) and pdf file with visualisaton (*[aa_sequences.pdf](docs/img/aa_sequences.pdf)*) in your working directory.  
 
 #### Visualisation of a pre-made alignments file.
 
@@ -62,6 +63,8 @@ See help message for more detailed parameters description (`msa4u -h`)
 **Output:**
 
 <img  src="docs/img/aa_sequences.png" width="800"/>
+
+---
 
 ### API.
 
