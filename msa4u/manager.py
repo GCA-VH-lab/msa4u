@@ -97,7 +97,7 @@ class Parameters:
                 print(help_message.read(), file=sys.stdout)
                 sys.exit()
 
-        filtered_args = {k: v for k, v in args.items() if v is not None}
+        filtered_args = {k: v for k, v in args.items() if (v is not None or (k == "alignments" or k == "fasta"))}
 
         self.cmd_arguments = filtered_args
         return None
