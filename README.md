@@ -61,7 +61,7 @@ See help message for more detailed parameters description (`msa4u -h`)
 
 **Output:**
 
-<img  src="docs/img/aa_sequences.png" width="400"/>
+<img  src="docs/img/aa_sequences.png" width="800"/>
 
 ### API.
 
@@ -70,7 +70,7 @@ Below we descrive several Python snippets that mimic results of command-line cal
 
 #### Aligmnent and visualisation.
 
-```
+```python3
 import msa4u
 
 parameters = msa4u.manager.Parameters()
@@ -82,7 +82,7 @@ msa.plot()
 ```
 #### Visualisation of a pre-made alignments file.
 
-```
+```python3
 import msa4u
 
 parameters = msa4u.manager.Parameters()
