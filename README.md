@@ -41,7 +41,7 @@ Here we present several examples of msa4u vizualisations.
 The necessary data samples are provided by msa4u at the post-install step:  
 `msa4u --data` 
 
-### Command-line interface.
+### Command-line interface
 
 #### Aligmnent and visualisation.
 
@@ -51,13 +51,13 @@ You can use a fasta file with unaligned sequences as input. In this case, msa4u 
 
 With default parameters you will get alignments file (*aa_sequences.aln.fa*) and pdf file with visualisaton (*[aa_sequences.pdf](docs/img/aa_sequences.pdf)*) in your working directory.  
 
-#### Visualisation of a pre-made alignments file.
+#### Visualisation of a pre-made alignments file
 
 You can use a pre-made alignments file as input with -aln parameter: 
 
 `msa4u -aln aa_sequences.aln.fa -label description -o visualisation.pdf`
 
-In this case we also used optional arguments: `-label` to choose labels style (can be id, description or all - full header of sequences); and `-o` to set output file name.  
+In this case we also used optional arguments: `-label` to set labels style (can be id, description or all - full header of sequences); and `-o` to set output file name.  
 See help message for more detailed parameters description (`msa4u -h`)
 
 **Output:**
@@ -66,12 +66,12 @@ See help message for more detailed parameters description (`msa4u -h`)
 
 ---
 
-### API.
+### API
 
 MSA4u has a simple API allowing it programmatic usage from within a Python program.  
 Below we descrive several Python snippets that mimic results of command-line calls. 
 
-#### Aligmnent and visualisation.
+#### Aligmnent and visualisation
 
 ```python3
 import msa4u
