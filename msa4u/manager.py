@@ -73,7 +73,7 @@ class Parameters:
         parser.add_argument("-o", dest="output_filename", type=str, default="auto")
         parser.add_argument("-st", dest="sequence_type", choices=["nt", "aa", "auto"], type=str, default="auto")
         parser.add_argument("-c", dest="config_file", type=str, default="standard")
-        parser.add_argument("-v", "--version", action='version', version='%(prog)s 0.1.1')
+        parser.add_argument("-v", "--version", action='version', version='%(prog)s 0.2.0')
         parser.add_argument("-q", "--quiet", dest="verbose", default=True, action="store_false")
         parser.add_argument("--debug", "-debug", dest="debug", action="store_true")
         parser.add_argument("-h", "--help", dest="help", action="store_true")
@@ -187,23 +187,25 @@ class Fasta:
         Returns:
             Bio.Align.MultipleSeqAlignment: MSA
         """
-
-        if self.parameters.arguments["save_msa_results"]:
-            output_name = self.parameters.arguments["output_filename_aln"]
-            if output_name == "auto":
-                output_name = msa4u.methods.update_path_extension(self.fasta, "aln.fa")
-            mafft_output = open(output_name, "w")
-            if self.parameters.arguments["verbose"]:
-                print(f"💌 Alignments file was saved as: {output_name}", file=sys.stdout)
-        else:
-            mafft_output = tempfile.NamedTemporaryFile()
-        mafft = self.parameters.arguments["mafft_binary"]
-        subprocess.run([mafft, "--auto", self.fasta], stdout=mafft_output, stderr=subprocess.DEVNULL)
-        msa = Bio.AlignIO.read(mafft_output.name, "fasta")
-        mafft_output.close()
-        for record in msa:
-            record.description = " ".join(record.description.split(" ")[1:])
-        return msa
+        try:
+            if self.parameters.arguments["save_msa_results"]:
+                output_name = self.parameters.arguments["output_filename_aln"]
+                if output_name == "auto":
+                    output_name = msa4u.methods.update_path_extension(self.fasta, "aln.fa")
+                mafft_output = open(output_name, "w")
+                if self.parameters.arguments["verbose"]:
+                    print(f"💌 Alignments file was saved as: {os.path.basename(output_name)}", file=sys.stdout)
+            else:
+                mafft_output = tempfile.NamedTemporaryFile()
+            mafft = self.parameters.arguments["mafft_binary"]
+            subprocess.run([mafft, "--auto", self.fasta], stdout=mafft_output, stderr=subprocess.DEVNULL)
+            msa = Bio.AlignIO.read(mafft_output.name, "fasta")
+            mafft_output.close()
+            for record in msa:
+                record.description = " ".join(record.description.split(" ")[1:])
+            return msa
+        except Exception as error:
+            raise MSA4uError("Unable to run MAFFT.") from error
 
 
 class MSA:
@@ -224,32 +226,35 @@ class MSA:
             parameters (Parameters): Parameters' class object.
 
         """
-        self.parameters = parameters
-        if isinstance(msa, str):
-            self.msa = Bio.AlignIO.read(msa, "fasta")
+        try:
+            self.parameters = parameters
+            if isinstance(msa, str):
+                self.msa = Bio.AlignIO.read(msa, "fasta")
+                for record in self.msa:
+                    record.description = " ".join(record.description.split(" ")[1:])
+            if isinstance(msa, Bio.Align.MultipleSeqAlignment):
+                self.msa = msa
             for record in self.msa:
-                record.description = " ".join(record.description.split(" ")[1:])
-        if isinstance(msa, Bio.Align.MultipleSeqAlignment):
-            self.msa = msa
-        for record in self.msa:
-            if self.parameters.arguments["label"] == "id":
-                record.annotations["label"] = record.id
-            elif self.parameters.arguments["label"] == "description":
-                record.annotations["label"] = record.description
-            elif self.parameters.arguments["label"] == "all":
-                record.annotations["label"] = f"{record.id} {record.description}"
-            else:
-                raise MSA4uError("Incorrect label parameter (can be id, desription or all)\n"
-                                 f"Check your config file.")
-        if parameters.arguments["sequence_type"] == "auto":
-            used_alphabet = set("".join([str(record.seq) for record in self.msa]))
-            ambiguous_codon_table = Bio.Data.CodonTable.ambiguous_dna_by_name["Standard"]
-            ambiguous_alphabet = dict(nt=set(ambiguous_codon_table.nucleotide_alphabet),
-                                      aa=set(ambiguous_codon_table.protein_alphabet))
-            if len((used_alphabet - ambiguous_alphabet["nt"]) & ambiguous_alphabet["aa"]):
-                parameters.arguments["sequence_type"] = "aa"
-            else:
-                parameters.arguments["sequence_type"] = "nt"
+                if self.parameters.arguments["label"] == "id":
+                    record.annotations["label"] = record.id
+                elif self.parameters.arguments["label"] == "description":
+                    record.annotations["label"] = record.description
+                elif self.parameters.arguments["label"] == "all":
+                    record.annotations["label"] = f"{record.id} {record.description}"
+                else:
+                    raise MSA4uError("Incorrect label parameter (can be id, desription or all)\n"
+                                     f"Check your config file.")
+            if parameters.arguments["sequence_type"] == "auto":
+                used_alphabet = set("".join([str(record.seq) for record in self.msa]))
+                ambiguous_codon_table = Bio.Data.CodonTable.ambiguous_dna_by_name["Standard"]
+                ambiguous_alphabet = dict(nt=set(ambiguous_codon_table.nucleotide_alphabet),
+                                          aa=set(ambiguous_codon_table.protein_alphabet))
+                if len((used_alphabet - ambiguous_alphabet["nt"]) & ambiguous_alphabet["aa"]):
+                    parameters.arguments["sequence_type"] = "aa"
+                else:
+                    parameters.arguments["sequence_type"] = "nt"
+        except Exception as error:
+            raise MSA4uError("Unable to create an MSA object.") from error
 
     def plot(self) -> None:
         """Run MSA visualisation.
@@ -257,18 +262,23 @@ class MSA:
         Returns: None
 
         """
-        msa_plot_manager = MSAPlotManager(self.msa, self.parameters)
-        msa_plot_manager.define_x_axis_coordinate_system()
-        msa_plot_manager.create_tracks()
-        if self.parameters.arguments["output_filename"] == "auto":
-            if self.parameters.arguments["alignments"]:
-                self.parameters.arguments["output_filename"] = msa4u.methods.update_path_extension(self.parameters.arguments["alignments"], "pdf")
-            elif self.parameters.arguments["fasta"]:
-                self.parameters.arguments["output_filename"] = msa4u.methods.update_path_extension(self.parameters.arguments["fasta"], "pdf")
-            else:
-                self.parameters.arguments["output_filename"] = f"msa4u_{time.strftime('%Y_%m_%d-%H_%M')}.pdf"
-        msa_plot_manager.plot(self.parameters.arguments["output_filename"])
-        return None
+        try:
+            msa_plot_manager = MSAPlotManager(self.msa, self.parameters)
+            msa_plot_manager.define_x_axis_coordinate_system()
+            msa_plot_manager.create_tracks()
+            if self.parameters.arguments["output_filename"] == "auto":
+                if self.parameters.arguments["alignments"]:
+                    self.parameters.arguments["output_filename"] = msa4u.methods.update_path_extension(
+                        self.parameters.arguments["alignments"], "pdf")
+                elif self.parameters.arguments["fasta"]:
+                    self.parameters.arguments["output_filename"] = msa4u.methods.update_path_extension(
+                        self.parameters.arguments["fasta"], "pdf")
+                else:
+                    self.parameters.arguments["output_filename"] = f"msa4u_{time.strftime('%Y_%m_%d-%H_%M')}.pdf"
+            msa_plot_manager.plot(self.parameters.arguments["output_filename"])
+            return None
+        except Exception as error:
+            raise MSA4uError("Unable to produce the MSA plot.") from error
 
 
 class MSAPlotManager:
@@ -368,7 +378,7 @@ class MSAPlotManager:
             current_y_top -= (track.needed_space)
         image.save()
         if self.parameters.arguments["verbose"]:
-            print(f"🖼️  MSA visualisation file was saved as: {filename}", file=sys.stdout)
+            print(f"🖼️ MSA plot was saved as: {os.path.basename(filename)}", file=sys.stdout)
         return None
 
 

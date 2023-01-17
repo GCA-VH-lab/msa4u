@@ -4,12 +4,20 @@ import msa4u
 import traceback
 import sys
 
-parameters = msa4u.manager.Parameters(api=False)
-parameters.parse_cmd_arguments()
-parameters.load_config(parameters.cmd_arguments["config_file"])
-if parameters.cmd_arguments["fasta"]:
-    fasta = msa4u.manager.Fasta(parameters.arguments["fasta"], parameters)
-    msa = msa4u.manager.MSA(fasta.run_mafft(), parameters)
-if parameters.cmd_arguments["alignments"]:
-    msa = msa4u.manager.MSA(parameters.arguments["alignments"], parameters)
-msa.plot()
+try:
+    parameters = msa4u.manager.Parameters(api=False)
+    parameters.parse_cmd_arguments()
+    parameters.load_config(parameters.cmd_arguments["config_file"])
+    if parameters.cmd_arguments["fasta"]:
+        fasta = msa4u.manager.Fasta(parameters.arguments["fasta"], parameters)
+        msa = msa4u.manager.MSA(fasta.run_mafft(), parameters)
+    if parameters.cmd_arguments["alignments"]:
+        msa = msa4u.manager.MSA(parameters.arguments["alignments"], parameters)
+    msa.plot()
+except:
+    if parameters.arguments["debug"]:
+        traceback.print_exc()
+    else:
+        for i in ((traceback.format_exc()).split('\n')):
+            if "MSA4uError" in i:
+                print(f"MSA4uError 💔: {i.split(':')[1]}", file=sys.stderr)
