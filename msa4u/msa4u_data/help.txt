@@ -1,4 +1,4 @@
-msa4u (version 0.1.1):
+msa4u (version 0.3.0):
 Simple visualisation tool for Multiple Sequence Alignments.
 Home page and documentation:
 https://github.com/art-egorov/msa4u

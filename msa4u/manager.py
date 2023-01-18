@@ -73,7 +73,7 @@ class Parameters:
         parser.add_argument("-o", dest="output_filename", type=str, default="auto")
         parser.add_argument("-st", dest="sequence_type", choices=["nt", "aa", "auto"], type=str, default="auto")
         parser.add_argument("-c", dest="config_file", type=str, default="standard")
-        parser.add_argument("-v", "--version", action='version', version='%(prog)s 0.2.0')
+        parser.add_argument("-v", "--version", action='version', version='%(prog)s 0.3.0')
         parser.add_argument("-q", "--quiet", dest="verbose", default=True, action="store_false")
         parser.add_argument("--debug", "-debug", dest="debug", action="store_true")
         parser.add_argument("-h", "--help", dest="help", action="store_true")
@@ -198,7 +198,11 @@ class Fasta:
             else:
                 mafft_output = tempfile.NamedTemporaryFile()
             mafft = self.parameters.arguments["mafft_binary"]
-            subprocess.run([mafft, "--auto", self.fasta], stdout=mafft_output, stderr=subprocess.DEVNULL)
+            if self.parameters.arguments["mafft_reorder_parameter"]:
+                subprocess.run([mafft, "--auto", "--reorder", self.fasta], stdout=mafft_output,
+                               stderr=subprocess.DEVNULL)
+            else:
+                subprocess.run([mafft, "--auto", self.fasta], stdout=mafft_output, stderr=subprocess.DEVNULL)
             msa = Bio.AlignIO.read(mafft_output.name, "fasta")
             mafft_output.close()
             for record in msa:
@@ -378,7 +382,7 @@ class MSAPlotManager:
             current_y_top -= (track.needed_space)
         image.save()
         if self.parameters.arguments["verbose"]:
-            print(f"🖼️ MSA plot was saved as: {os.path.basename(filename)}", file=sys.stdout)
+            print(f"🎨 MSA plot was saved as: {os.path.basename(filename)}", file=sys.stdout)
         return None
 
 

@@ -1,5 +1,5 @@
 
-<img  src="docs/img/msa4u_logo.png" width="300"/>
+<img  src="docs/img/msa4u_logo.png" width="250"/>
 
 
 ## Description
@@ -11,7 +11,7 @@
 **Python dependencies:** biopython, configs, argparse, reportlab  
 **OS-level dependencies:** mafft (v. 7.490 is included in the package)   
 **License:** [WTFPL](http://www.wtfpl.net)  
-**Version:** 0.2.0 (January 2022)
+**Version:** 0.3.0 (January 2022)
 
 
 ## Installation
@@ -25,7 +25,7 @@ python3 -m pip install msa4u
 - The development version is available at github :
 
 ```
-git clone https://github.com/art-egorov/msa4u.git
+git clone https://github.com/GCA-VH-lab//msa4u.git
 cd msa4u
 python3 -m pip install --upgrade pip
 python3 -m pip install wheel
@@ -109,4 +109,4 @@ Please contact us by e-mail _artem**dot**egorov**AT**med**dot**lu**dot**se_ or u
 
 ## Authors
 
-mas4u is developed by Artyom Egorov at [the Atkinson Lab](https://atkinson-lab.com), Department of Experimental Medical Science, Lund University, Sweden. We are open for suggestions to extend and improve svist4get functionality. Please don't hesitate to share your ideas or feature requests.
+mas4u is developed by Artyom Egorov at [the Atkinson Lab](https://atkinson-lab.com), Department of Experimental Medical Science, Lund University, Sweden. We are open for suggestions to extend and improve msa4u functionality. Please don't hesitate to share your ideas or feature requests.

@@ -15,7 +15,7 @@ extra_files = package_files("msa4u/msa4u_data")
 extra_files.append("docs/pypi.md")
 
 setup(name="msa4u",
-      version="0.2.0",
+      version="0.3.0",
       description="A tool for short uORF annotation.",
       url="https://art-egorov.github.io/msa4u/",
       author="Artyom Egorov",
