@@ -19,10 +19,13 @@ def adjust_paths_for_linux() -> None:
     """
     internal_dir = os.path.join(os.path.dirname(__file__), "msa4u_data")
     config_files = ["standard.cfg"]
+    print(internal_dir)
     for config_file in config_files:
+        print(config_file)
         config_file_path = os.path.join(internal_dir, config_file)
         with open(config_file_path, "r+") as config:
-            config_txt = re.sub(r"/mafft-mac/mafft\.bat", "/mafft-linux64/mafft.bat", config_txt)
+            config_txt = re.sub(r"/mafft-mac/mafft\.bat", "/mafft-linux64/mafft.bat", config.read())
+            print(config_txt)
             config.seek(0)
             config.truncate()
             config.write(config_txt)

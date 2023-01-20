@@ -11,7 +11,7 @@
 **Python dependencies:** biopython, configs, argparse, reportlab  
 **OS-level dependencies:** mafft (v. 7.490 is included in the package)   
 **License:** [WTFPL](http://www.wtfpl.net)  
-**Version:** 0.3.0 (January 2022)
+**Version:** 0.4.0 (January 2022)
 
 
 ## Installation

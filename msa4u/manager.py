@@ -73,7 +73,7 @@ class Parameters:
         parser.add_argument("-o", dest="output_filename", type=str, default="auto")
         parser.add_argument("-st", dest="sequence_type", choices=["nt", "aa", "auto"], type=str, default="auto")
         parser.add_argument("-c", dest="config_file", type=str, default="standard")
-        parser.add_argument("-v", "--version", action='version', version='%(prog)s 0.3.0')
+        parser.add_argument("-v", "--version", action='version', version='%(prog)s 0.4.0')
         parser.add_argument("-q", "--quiet", dest="verbose", default=True, action="store_false")
         parser.add_argument("--debug", "-debug", dest="debug", action="store_true")
         parser.add_argument("-h", "--help", dest="help", action="store_true")

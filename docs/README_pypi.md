@@ -1,5 +1,5 @@
 
-<img src="https://raw.githubusercontent.com/art-egorov/msa4u/main/docs/img/msa4u_logo.png" width="300"/>
+<img src="https://raw.githubusercontent.com/GCA-VH-lab/msa4u/main/docs/img/msa4u_logo.png" width="300"/>
 
 
 ## Description
@@ -11,7 +11,7 @@
 **Python dependencies:** biopython, configs, argparse, reportlab  
 **OS-level dependencies:** mafft (v. 7.490 is included in the package)   
 **License:** [WTFPL](http://www.wtfpl.net)  
-**Version:** 0.3.0 (January 2023)
+**Version:** 0.4.0 (January 2023)
 
 
 ## Installation
