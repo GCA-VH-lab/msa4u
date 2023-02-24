@@ -246,7 +246,7 @@ class MSA:
                 elif self.parameters.arguments["label"] == "all":
                     record.annotations["label"] = f"{record.id} {record.description}"
                 else:
-                    raise MSA4uError("Incorrect label parameter (can be id, desription or all)\n"
+                    raise MSA4uError("Incorrect label parameter (can be id, description or all)\n"
                                      f"Check your config file.")
             if parameters.arguments["sequence_type"] == "auto":
                 used_alphabet = set("".join([str(record.seq) for record in self.msa]))
